@@ -18,16 +18,16 @@
 #endif
 namespace itk {
 
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+template <class TInputImage, class TOutputImage, class TCompare>
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
 ::ReconstructionImageFilter()
 {
   m_FullyConnected = false;
 }
 
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
+template <class TInputImage, class TOutputImage, class TCompare>
 void
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
 ::GenerateInputRequestedRegion()
 {
   // call the superclass' implementation of this method
@@ -48,42 +48,42 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
   maskPtr->SetRequestedRegion(maskPtr->GetLargestPossibleRegion());
 }
 
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
+template <class TInputImage, class TOutputImage, class TCompare>
 void
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
 ::EnlargeOutputRequestedRegion(DataObject *)
 {
   this->GetOutput()
     ->SetRequestedRegion( this->GetOutput()->GetLargestPossibleRegion() );
 }
 
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
+template <class TInputImage, class TOutputImage, class TCompare>
 void
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
 ::SetMarkerImage(const MarkerImageType* markerImage)
 {
   // Process object is not const-correct so the const casting is required.
   this->SetNthInput(0, const_cast<MarkerImageType *>( markerImage ));
 }
 
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
-const typename ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::MarkerImageType *
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::GetMarkerImage()
+template <class TInputImage, class TOutputImage, class TCompare>
+const typename ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>::MarkerImageType *
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>::GetMarkerImage()
 {
   return this->GetInput(0);
 }
 
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
+template <class TInputImage, class TOutputImage, class TCompare>
 void
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::SetMaskImage(const MaskImageType* maskImage)
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>::SetMaskImage(const MaskImageType* maskImage)
 {
   // Process object is not const-correct so the const casting is required.
   this->SetNthInput(1, const_cast<MaskImageType *>( maskImage ));
 }
 
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
-const typename ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::MaskImageType *
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::GetMaskImage()
+template <class TInputImage, class TOutputImage, class TCompare>
+const typename ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>::MaskImageType *
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>::GetMaskImage()
 {
   return this->GetInput(1);
 }
@@ -91,9 +91,9 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::Ge
 #ifdef BASIC
 // this is the basic version - it works and is a lot faster than the
 // existing reconstruction routines in itk
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
+template <class TInputImage, class TOutputImage, class TCompare>
 void
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
 ::GenerateData()
 {
   // Allocate the output
@@ -111,8 +111,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
   MaskImageConstPointer   maskImage = this->GetMaskImage();
   OutputImagePointer      output = this->GetOutput();
 
-  TFunction1 compareA;
-  TFunction2 compareB;
+  TCompare compare;
 
   InputIteratorType inIt( markerImage,
 			  output->GetRequestedRegion() );
@@ -157,7 +156,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
     for (sIt = outNIt.Begin(); !sIt.IsAtEnd();++sIt)
       {
       OutputImagePixelType VN = sIt.Get();
-      if (compareA(VN, V)) 
+      if (compare(VN, V)) 
 	{
 	outNIt.SetCenterPixel(VN);
 	V = VN;
@@ -165,7 +164,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
       }
     // this step clamps to the mask 
     OutputImagePixelType iV = static_cast<OutputImagePixelType>(mskIt.Get());
-    if (compareA(V, iV))
+    if (compare(V, iV))
       {
       outNIt.SetCenterPixel(iV);
       }
@@ -203,7 +202,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
     for (sIt = outNIt.Begin(); !sIt.IsAtEnd();++sIt)
       {
       OutputImagePixelType VN = sIt.Get();
-      if (compareA(VN, V)) 
+      if (compare(VN, V)) 
 	{
 	outNIt.SetCenterPixel(VN);
 	V = VN;
@@ -212,7 +211,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
     //std::cout << (int)V << " " << mskNIt.GetIndex() <<std::endl;
     // this step clamps to the mask 
     OutputImagePixelType iV = static_cast<OutputImagePixelType>(mskNIt.GetCenterPixel());
-    if (compareA(V, iV))
+    if (compare(V, iV))
       {
       outNIt.SetCenterPixel(iV);
       V = iV;
@@ -226,7 +225,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
       //std::cout << " " << outNIt.GetIndex(*oLIt);
       OutputImagePixelType VN = outNIt.GetPixel(*oLIt);
       OutputImagePixelType iN = static_cast<OutputImagePixelType>(mskNIt.GetPixel(*mLIt));
-      if (compareB(VN, V) && compareB(VN, iN)) 
+      if (compare(V, VN) && compare(iN, VN)) 
 	{
 	IndexFifo.push(outNIt.GetIndex());
 	break;
@@ -263,9 +262,9 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
       OutputImagePixelType VN = outNIt.GetPixel(*oLIt);
       OutputImagePixelType iN = static_cast<OutputImagePixelType>(mskNIt.GetPixel(*mLIt));
       // candidate for dilation via flooding
-      if (compareB(VN, V) && (iN != VN))
+      if (compare(V, VN) && (iN != VN))
 	{
-	if (compareB(V, iN)) 
+	if (compare(iN, V)) 
 	  {
 	  // not clamped by the mask, propogate the center value
 	  outNIt.SetPixel(*oLIt, V);
@@ -288,9 +287,9 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 // calculator to optimize the performance. The basic idea will be to
 // operate on the inside region in the normal way and then put all of
 // the faces on the fifo
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
+template <class TInputImage, class TOutputImage, class TCompare>
 void
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
 ::GenerateData()
 {
   // Allocate the output
@@ -358,9 +357,9 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 
 }
 
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
+template <class TInputImage, class TOutputImage, class TCompare>
 void
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
 ::fillFaces(FaceListType faceList,
 	    OutputImagePointer &output)
 {
@@ -379,9 +378,9 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
     }
 }
 
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
+template <class TInputImage, class TOutputImage, class TCompare>
 void
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
 ::copyFaces(FaceListType faceList,
 	    MarkerImageConstPointer markerImage,
 	    OutputImagePointer &output)
@@ -403,9 +402,9 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
     }
 }
 
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
+template <class TInputImage, class TOutputImage, class TCompare>
 void
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
 ::processRegion(ProgressReporter &progress,
 		const OutputImageRegionType thisRegion,
 		const ISizeType kernelRadius,
@@ -437,7 +436,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
     for (sIt = outNIt.Begin(); !sIt.IsAtEnd();++sIt)
       {
       OutputImagePixelType VN = sIt.Get();
-      if (compareA(VN, V)) 
+      if (compare(VN, V)) 
 	{
 	outNIt.SetCenterPixel(VN);
 	V = VN;
@@ -445,7 +444,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
       }
     // this step clamps to the mask 
     OutputImagePixelType iV = static_cast<OutputImagePixelType>(mskIt.Get());
-    if (compareA(V, iV))
+    if (compare(V, iV))
       {
       outNIt.SetCenterPixel(iV);
       }
@@ -483,7 +482,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
     for (sIt = outNIt.Begin(); !sIt.IsAtEnd();++sIt)
       {
       OutputImagePixelType VN = sIt.Get();
-      if (compareA(VN, V)) 
+      if (compare(VN, V)) 
 	{
 	outNIt.SetCenterPixel(VN);
 	V = VN;
@@ -492,7 +491,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
     //std::cout << (int)V << " " << mskNIt.GetIndex() <<std::endl;
     // this step clamps to the mask 
     OutputImagePixelType iV = static_cast<OutputImagePixelType>(mskNIt.GetCenterPixel());
-    if (compareA(V, iV))
+    if (compare(V, iV))
       {
       outNIt.SetCenterPixel(iV);
       V = iV;
@@ -506,7 +505,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
       //std::cout << " " << outNIt.GetIndex(*oLIt);
       OutputImagePixelType VN = outNIt.GetPixel(*oLIt);
       OutputImagePixelType iN = static_cast<OutputImagePixelType>(mskNIt.GetPixel(*mLIt));
-      if (compareB(VN, V) && compareB(VN, iN)) 
+      if (compare(V, VN) && compare(iN, VN)) 
 	{
 	IndexFifo.push(outNIt.GetIndex());
 	break;
@@ -517,9 +516,9 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 
 }
 
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
+template <class TInputImage, class TOutputImage, class TCompare>
 void
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
 ::buildFifo(ProgressReporter &progress,
 	    const OutputImageRegionType thisRegion,
 	    OutputImagePointer &output,
@@ -533,9 +532,9 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
     progress.CompletedPixel();
     }
 }
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
+template <class TInputImage, class TOutputImage, class TCompare>
 void
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
 ::processFifo(ProgressReporter &progress,
 	      const OutputImageRegionType thisRegion,
 	      const ISizeType kernelRadius,
@@ -587,9 +586,9 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
       OutputImagePixelType VN = outNIt.GetPixel(*oLIt);
       OutputImagePixelType iN = static_cast<OutputImagePixelType>(mskNIt.GetPixel(*mLIt));
       // candidate for dilation via flooding
-      if (compareB(VN, V) && (iN != VN))
+      if (compare(V, VN) && (iN != VN))
 	{
-	if (compareB(V, iN)) 
+	if (compare(iN, V)) 
 	  {
 	  // not clamped by the mask, propogate the center value
 	  outNIt.SetPixel(*oLIt, V);
@@ -610,9 +609,9 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 #endif
 #ifdef COPY
 // a version that takes a padded copy of mask and marker
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
+template <class TInputImage, class TOutputImage, class TCompare>
 void
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
 ::GenerateData()
 {
   // Allocate the output
@@ -653,8 +652,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
   MarkerImageConstPointer markerImageP = MarkerPad->GetOutput();
   MaskImageConstPointer   maskImageP = MaskPad->GetOutput();
 
-  TFunction1 compareA;
-  TFunction2 compareB;
+  TCompare compare;
 
   FaceCalculatorType faceCalculator;
 
@@ -695,7 +693,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
     for (sIt = outNIt.Begin(); !sIt.IsAtEnd();++sIt)
       {
       InputImagePixelType VN = sIt.Get();
-      if (compareA(VN, V)) 
+      if (compare(VN, V)) 
 	{
 	outNIt.SetCenterPixel(VN);
 	V = VN;
@@ -703,7 +701,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
       }
     // this step clamps to the mask 
     InputImagePixelType iV = static_cast<OutputImagePixelType>(mskIt.Get());
-    if (compareA(V, iV))
+    if (compare(V, iV))
       {
       outNIt.SetCenterPixel(iV);
       }
@@ -741,14 +739,14 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
     for (sIt = outNIt.Begin(); !sIt.IsAtEnd();++sIt)
       {
       InputImagePixelType VN = sIt.Get();
-      if (compareA(VN, V)) 
+      if (compare(VN, V)) 
 	{
 	outNIt.SetCenterPixel(VN);
 	V = VN;
 	}
       }
     InputImagePixelType iV = mskNIt.GetCenterPixel();
-    if (compareA(V, iV))
+    if (compare(V, iV))
       {
       outNIt.SetCenterPixel(iV);
       V = iV;
@@ -762,7 +760,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
       //std::cout << " " << outNIt.GetIndex(*oLIt);
       InputImagePixelType VN = outNIt.GetPixel(*oLIt);
       InputImagePixelType iN = mskNIt.GetPixel(*mLIt);
-      if (compareB(VN, V) && compareB(VN, iN)) 
+      if (compare(V, VN) && compare(iN, VN)) 
 	{
 	IndexFifo.push(outNIt.GetIndex());
 	break;
@@ -799,9 +797,9 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
       InputImagePixelType VN = outNIt.GetPixel(*oLIt);
       InputImagePixelType iN = mskNIt.GetPixel(*mLIt);
       // candidate for dilation via flooding
-      if (compareB(VN, V) && (iN != VN))
+      if (compare(V, VN) && (iN != VN))
 	{
-	if (compareB(V, iN)) 
+	if (compare(iN, V)) 
 	  {
 	  // not clamped by the mask, propogate the center value
 	  outNIt.SetPixel(*oLIt, V);
@@ -832,9 +830,9 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 }
 #endif
 
-template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
+template <class TInputImage, class TOutputImage, class TCompare>
 void
-ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
 ::PrintSelf(std::ostream &os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);

@@ -18,13 +18,11 @@ template <class TInputImage, class TOutputImage>
 class ITK_EXPORT ReconstructionByDilationImageFilter :
     public
     ReconstructionImageFilter<TInputImage, TOutputImage,
-					   std::greater<typename TOutputImage::PixelType>,
-					   std::less<typename TOutputImage::PixelType>  >{
+					   std::greater<typename TOutputImage::PixelType> >{
 public:
   typedef ReconstructionByDilationImageFilter Self;
   typedef ReconstructionImageFilter<TInputImage, TOutputImage,
-                                     std::greater<typename TOutputImage::PixelType>,
-                                     std::less<typename TOutputImage::PixelType> > Superclass;
+                                     std::greater<typename TOutputImage::PixelType> > Superclass;
 
   typedef SmartPointer<Self>   Pointer;
   typedef SmartPointer<const Self>  ConstPointer;

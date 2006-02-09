@@ -20,14 +20,11 @@ namespace itk {
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT ReconstructionByErosionImageFilter :
     public
-    ReconstructionImageFilter<TInputImage, TOutputImage,
-					   std::less<typename TOutputImage::PixelType>,
-					   std::greater<typename TOutputImage::PixelType>  >{
+    ReconstructionImageFilter<TInputImage, TOutputImage, std::less<typename TOutputImage::PixelType> >
+{
 public:
   typedef ReconstructionByErosionImageFilter Self;
-  typedef ReconstructionImageFilter<TInputImage, TOutputImage,
-                                     std::less<typename TOutputImage::PixelType>,
-                                     std::greater<typename TOutputImage::PixelType> > Superclass;
+  typedef ReconstructionImageFilter<TInputImage, TOutputImage, std::less<typename TOutputImage::PixelType> > Superclass;
 
   typedef SmartPointer<Self>   Pointer;
   typedef SmartPointer<const Self>  ConstPointer;

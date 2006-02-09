@@ -40,8 +40,7 @@ namespace itk {
  * \ingroup MathematicalMorphologyImageFilters
  */
 
-template<class TInputImage, class TOutputImage, 
-	 class TFunction1, class TFunction2>
+template<class TInputImage, class TOutputImage, class TCompare>
 class ITK_EXPORT ReconstructionImageFilter : 
     public ImageToImageFilter<TInputImage, TOutputImage>
 {
@@ -146,7 +145,7 @@ private:
   bool                m_FullyConnected;
 
 #ifdef FACES
-  TFunction1 compareA;
+  TCompare compareA;
   TFunction2 compareB;
 
 
