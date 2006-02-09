@@ -34,14 +34,14 @@ int main(int, char * argv[])
             << "Vincent" << "\t"
             << std::endl;
 
-  itk::TimeProbe origtime;
-  itk::TimeProbe vincenttime;
-
   for(int F=0; F<=1; F++ )
     {
     origrecon->SetFullyConnected(F);
     recon->SetFullyConnected(F);
     
+    itk::TimeProbe origtime;
+    itk::TimeProbe vincenttime;
+
     for (int i=0;i<100;i++)
       {
       origtime.Start();
