@@ -74,7 +74,6 @@ public:
   typedef typename OutputImageType::RegionType     OutputImageRegionType;
   typedef typename OutputImageType::PixelType      OutputImagePixelType;
   typedef typename OutputImageType::IndexType      OutputImageIndexType;
-  typedef typename OutputImageType::RegionType     OutputImageRegionType;
   
   /** ImageDimension constants */
   /** ImageDimension constants */
