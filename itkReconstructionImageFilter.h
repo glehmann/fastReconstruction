@@ -145,8 +145,7 @@ private:
   bool                m_FullyConnected;
 
 #ifdef FACES
-  TCompare compareA;
-  TFunction2 compareB;
+  TCompare compare;
 
 
   // declare our queue type
