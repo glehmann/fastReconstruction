@@ -30,6 +30,7 @@ int main(int, char * argv[])
   OrigReconType::Pointer origrecon = OrigReconType::New();
   origrecon->SetInput( reader->GetOutput() );
   origrecon->SetHeight(height);
+  itk::SimpleFilterWatcher watcher2(origrecon, "origrecon");
 
   origrecon->SetFullyConnected(F);
   recon->SetFullyConnected(F);

@@ -3,6 +3,7 @@
 
 #include "itkHMinimaImageFilterRobinson.h"
 #include "itkHMinimaImageFilter.h"
+#include "itkSimpleFilterWatcher.h"
 
 int main(int, char * argv[])
 {
@@ -23,11 +24,13 @@ int main(int, char * argv[])
   ReconType::Pointer recon = ReconType::New();
   recon->SetInput( reader->GetOutput() );
   recon->SetHeight(height);
+  itk::SimpleFilterWatcher watcher(recon, "recon");
  
   typedef itk::HMinimaImageFilterRobinson< IType, IType > OrigReconType;
   OrigReconType::Pointer origrecon = OrigReconType::New();
   origrecon->SetInput( reader->GetOutput() );
   origrecon->SetHeight(height);
+  itk::SimpleFilterWatcher watcher2(origrecon, "origrecon");
 
   origrecon->SetFullyConnected(F);
   recon->SetFullyConnected(F);
