@@ -30,8 +30,8 @@ int main(int, char * argv[])
   origrecon->SetHeight(1);
  
   std::cout << "#F" << "\t"
-            << "original" << "\t"
-            << "vincent" << "\t"
+            << "Robinson" << "\t"
+            << "Vincent" << "\t"
             << std::endl;
 
   itk::TimeProbe origtime;
@@ -58,7 +58,7 @@ int main(int, char * argv[])
       }
 
     std::cout << F << "\t"
-              << origtime.GetMeanTime() << "\t"
+              << origtime.GetMeanTime() << "\t\t"
               << vincenttime.GetMeanTime() << "\t"
               <<std::endl;
     }

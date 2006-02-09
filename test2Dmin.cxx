@@ -38,8 +38,8 @@ int main(int, char * argv[])
 
   typedef itk::ImageFileWriter< IType > WriterType;
   WriterType::Pointer writer = WriterType::New();
+  std::cout << "writing " << argv[2] << std::endl;
   writer->SetFileName( argv[2] );
-
   writer->SetInput(recon->GetOutput());
   writer->Update();
 

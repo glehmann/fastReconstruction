@@ -27,7 +27,7 @@ colorlinks,linkcolor={blue},citecolor={blue},urlcolor={blue},
 
 % The title should be descriptive enough for people to be able to find
 % the relevant document. 
-\title{Improving performance of morphological reconstruction using queues}
+\title{Improving performance of morphological reconstruction}
 
 % Increment the release number whenever significant changes are made.
 % The author and/or editor can define 'significant' however they like.
@@ -48,47 +48,157 @@ colorlinks,linkcolor={blue},citecolor={blue},urlcolor={blue},
 
 \begin{abstract}
 \noindent
-% The abstract should be a paragraph or two long, and describe the
-% scope of the document.
-Reconstruction by erosion and dilations are examples of interesting
-and useful morphological algorithms are described as repeated
-application of simpler filters until convergence is reached. While
-such descriptions are concise and easy to understand they do not lead
-directly to particularly efficient implementations.
-
-This article describes the performance improvements when queue based
-approaches described in \cite{} are used. 
+Morphological reconstruction may be implemented in a number of
+different ways. ITK has an iterative method and a non iterative
+method. This article compares the performance of another non iterative
+method and finds a significant improvement.
 \end{abstract}
 
 \tableofcontents
 
+\section{Introduction}
+Morphological reconstruction by erosion or dilation, also referred to
+as geodesic erosion or dilation, operate on a marker image and a mask
+image. In the case of dilation the marker image is dilated by an
+elementary structuring element and the pixelwise minimum of the result
+and the mask is computed. This procedure can be run for a fixed number
+of iterations or until convergence.
 
-% \url{http://www.itk.org}
-% \code{Insight/Documentation/Style.pdf}
-% \section{Principles of Solar Spot Detection}
-% \cite{ITKSoftwareGuide}.
-% \doxygen{ImageToImageFilter}
+The original implementation of morhpological reconstruction in ITK
+found in {\bf itkGrayscaleGeodesicDilateImageFilter} and {\bf
+itkGrayscaleGeodesicErodeImageFilter} provides a direct implementation
+of the approach outlined above. Unfortunately this approach is very
+time consuming when the aim is to run until convergence.
 
-% \small \begin{verbatim}
-% \end{verbatim} \normalsize
+A faster, non iterative implementation, has been provided in {\bf
+itkReconstructionByDilationImageFilter} and {\bf
+itkReconstructionByErosionImageFilter}. These filters implement the
+algorithm described in \cite{Robinson2004a}.
 
+This report investigates the performance of another algorithm
+described in \cite{Vincent93a} and demonstrates another significant
+improvement in performance.
 
-% The {itemize} environment uses a bullet for each \item.  If you want the 
-% \item's numbered, use the {enumerate} environment instead.
-% \begin{itemize}
-%   \item  Insight Toolkit 2.4.
-%   \item  CMake 2.2
-% \end{itemize}
+\section{Hybrid algorithm}
+The hybrid algorithm for morphological reconstruction described in \cite{Vincent93a} is:
 
+\begin{itemize}
+\item I : mask image
+\item J : marker image, defined on domain $D_I$
+\item scane $D_I$ in raster order:
+   \begin{itemize}
+	\item Let $p$ be the current pixel;
+	\item $J(p) = (max\{J(q), q \in N^+_G(p) \cup \{p\}\}) \wedge I(p)$
+   \end{itemize}
+\item scane $D_I$ in anti-raster order:
+   \begin{itemize}
+	\item Let $p$ be the current pixel;
+	\item $J(p) = (max\{J(q), q \in N^-_G(p) \cup \{p\}\}) \wedge I(p)$
+	\item If there exist $q \in  N^-_G(p)$ such that $J(q) < J(p)$ and $J(q) < I(q)$ then {\em fifo\_add(q)}
+   \end{itemize}
+\item Propagation step: While (!fifo\_empty)
+   \begin{itemize}
+	\item p = fifo\_first()
+        \item For every pixel $q \in N_G(p)$:
+        \begin{itemize}
+	\item If $J(q) < J(p)$ and $I(q) \ne J(q)$ then
 
+	      $J(q) = \min\{J(p),I(q)\}$
 
-\appendix
+         	{\em fifo\_add(q)}
+		
+	\end{itemize}
+   \end{itemize}
+\end{itemize}
+
+where $N_G(p)$ denotes the neighborhood of $p$ on a grid $G$, with
+$N^+$ and $N^-$ denoting the set of neighbors reached before and after
+$p$ during a raster scan. $\wedge$ is the pointwise minimum operator.
+\section{Implementation details}
+The implementation of this algorithm is provided by {\bf
+itkMorphologicalReconstructionImageFilter}, which takes functor
+template arguments to provide either erosion or dilation
+reconstruction filters. The reconstruction by erosion filter is {\bf
+MorphologicalReconstructionErosionImageFilter} and the reconstruction
+by dilation filter is {\bf
+MorphologicalReconstructionDilationImageFilter}. These filters are
+verified by comparison with the existing implementation using a series
+of tests in which regional extrema are supressed. The tests use {\bf
+itkHMinimaImageFilter2} and {\bf itkHMaximaImageFilter2} which are
+versions of {\bf itkHMinimaImageFilter} and {\bf
+itkHMaximaImageFilter} that have been modified to use the new
+reconstruction filter.
+
+A typical requirement is that the mask must always be greater than or
+equal to the marker image. In the new filter this restriction is
+enforced implicitly.
+
+\subsection{Optimization}
+Profiling of the initial implementation suggested that the boundary
+checks were contributing a significant overhead, as would be
+expected. An attempt was made to use the face calculator to improve
+performance without increasing the size of the image (these
+modifications are present in the code and may be activated by defining
+the symbole ``FACE'' in the header file). Unfortunately the algorithm
+is strongly dependent on visit order and operating on face and body
+regions changes the visit ordering and produces incorrect
+results. This strategy may be feasible with much more careful analysis
+of the region borders.
+
+A much simpler optimization is to pad the image. This option can be
+activated by defining the ``COPY'' macro in the header file and
+provides a considerable improvement in execution speed at the cost of
+greater memory use. Someone should probably check my use of the pad
+and crop filters to make sure that the mini-pipeline conforms to
+standards.
+\section{Performance tests}
+The first column indicates the connectivity - 0 is face connected, 1
+is fully connected.
+
+2D image without optimization:
+\begin{verbatim}
+> ./perf2D images/cthead1.png
+#F      Robinson        Vincent
+0       0.1303          0.0222
+1       0.13585         0.0273
+\end{verbatim}
+
+3D image without optimization:
+\begin{verbatim}
+> ./perf3D images/ESCells.hdr
+#F      Robinson        Vincent
+0       19.947  	3.795
+1       23.771  	6.6095
+\end{verbatim}
+
+2D images with edge padding:
+\begin{verbatim}
+>  ./perf2D images/cthead1.png
+#F      Robinson        Vincent
+0       0.1394          0.0192
+1       0.1444          0.02185
+\end{verbatim}
+3D image with edge padding:
+\begin{verbatim}
+> ./perf3D images/ESCells.hdr
+#F      Robinson        Vincent
+0       20.468          2.807
+1       24.218          4.016
+\end{verbatim}
+
+\section{Conclusion}
+The new implemenation of the Vincent algorithm is between 5 and 8
+times faster than the Robinson algorithm, depending on the choice of
+connectivity and image padding optimization. Optimization by padding
+the boundary produced a significant saving for the 3D dataset used in
+testing. The saving was not as significant for 2D data.
 
 
 
 \bibliographystyle{plain}
-\bibliography{InsightJournal}
-\nocite{ITKSoftwareGuide}
+%\bibliography{InsightJournal}
+\bibliography{Article}
+%\nocite{ITKSoftwareGuide}
 
 \end{document}
 

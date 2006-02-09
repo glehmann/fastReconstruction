@@ -4,6 +4,22 @@
 #include "itkImageToImageFilter.h"
 #include "itkConstShapedNeighborhoodIterator.h"
 #include "itkShapedNeighborhoodIterator.h"
+#include "itkImageRegionConstIterator.h"
+#include "itkImageRegionIterator.h"
+#include "itkProgressReporter.h"
+#include <queue>
+
+//#define BASIC
+//#define FACES
+#define COPY
+
+#ifdef FACES
+#include "itkNeighborhoodAlgorithm.h"
+#endif
+
+#ifdef COPY
+#include "itkNeighborhoodAlgorithm.h"
+#endif
 
 namespace itk {
 
@@ -13,9 +29,9 @@ namespace itk {
  *
  * This filter uses Luc Vincent's algorithm, which employs raster and
  * antiraster propogation steps followed by a FIFO based propogation
- * step. "Morphological grayscale reconstruction - definition,
- * efficient implementation and applications in image analysis", Proc
- * IEEE Computer Vision and Pattern Recognition, 1992.
+ * step. "Morphological grayscale reconstruction in image analysis -
+ * applications and efficient algorithms" -- IEEE Transactions on
+ * Image processing, Vol 2, No 2, pp 176-201, April 1993
  *
  * \author Richard Beare. Department of Medicine, Monash University,
  * Melbourne, Australia.
@@ -47,6 +63,8 @@ public:
   typedef typename MarkerImageType::ConstPointer   MarkerImageConstPointer;
   typedef typename MarkerImageType::RegionType     MarkerImageRegionType;
   typedef typename MarkerImageType::PixelType      MarkerImagePixelType;
+  typedef typename InputImageType::PixelType       InputImagePixelType;
+  typedef typename InputImageType::IndexType       InputImageIndexType;
   typedef typename MaskImageType::Pointer          MaskImagePointer;
   typedef typename MaskImageType::ConstPointer     MaskImageConstPointer;
   typedef typename MaskImageType::RegionType       MaskImageRegionType;
@@ -56,6 +74,7 @@ public:
   typedef typename OutputImageType::RegionType     OutputImageRegionType;
   typedef typename OutputImageType::PixelType      OutputImagePixelType;
   typedef typename OutputImageType::IndexType      OutputImageIndexType;
+  typedef typename OutputImageType::RegionType     OutputImageRegionType;
   
   /** ImageDimension constants */
   /** ImageDimension constants */
@@ -126,6 +145,58 @@ private:
   void operator=(const Self&); //purposely not implemented
   typename TInputImage::PixelType m_MarkerValue;
   bool                m_FullyConnected;
+
+#ifdef FACES
+  TFunction1 compareA;
+  TFunction2 compareB;
+
+
+  // declare our queue type
+  typedef typename std::queue<OutputImageIndexType> FifoType;
+
+  typedef typename itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<OutputImageType> FaceCalculatorType;
+
+  typedef typename FaceCalculatorType::FaceListType FaceListType;
+  typedef typename FaceCalculatorType::FaceListType::iterator FaceListTypeIt;
+
+  void processRegion(ProgressReporter &progress,
+		     const OutputImageRegionType thisRegion,
+		     const ISizeType kernelRadius,
+		     MarkerImageConstPointer markerImage,
+		     MaskImageConstPointer   maskImage,
+		     OutputImagePointer &output,
+		     FifoType &IndexFifo);
+
+  void buildFifo(ProgressReporter &progress,
+		 const OutputImageRegionType thisRegion,
+		 OutputImagePointer &output,
+		 FifoType &IndexFifo);
+
+  void processFifo(ProgressReporter &progress,
+		   const OutputImageRegionType thisRegion,
+		   const ISizeType kernelRadius,
+		   MarkerImageConstPointer markerImage,
+		   MaskImageConstPointer   maskImage,
+		   OutputImagePointer &output,
+		   FifoType &IndexFifo);
+
+  void fillFaces(FaceListType faceList,
+		 OutputImagePointer &output);
+  
+  void copyFaces(FaceListType faceList,
+		 MarkerImageConstPointer markerImage,
+		 OutputImagePointer &output);
+		 
+#endif
+
+#ifdef COPY
+  typedef typename itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<OutputImageType> FaceCalculatorType;
+
+  typedef typename FaceCalculatorType::FaceListType FaceListType;
+  typedef typename FaceCalculatorType::FaceListType::iterator FaceListTypeIt;
+#endif
+  typedef ImageRegionConstIterator<InputImageType> InputIteratorType;
+  typedef ImageRegionIterator<OutputImageType> OutputIteratorType;
 
   typedef typename OutputImageType::IndexType OutIndexType;
   typedef typename InputImageType::IndexType InIndexType;
