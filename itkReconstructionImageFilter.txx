@@ -637,12 +637,15 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
   typename PadType::Pointer MaskPad = PadType::New();
   typename PadType::Pointer MarkerPad = PadType::New();
 
+  ISizeType padSize;
+  padSize.Fill( 1 );
+
   MaskPad->SetConstant(m_MarkerValue);
   MarkerPad->SetConstant(m_MarkerValue);
-  MaskPad->SetPadLowerBound(1);
-  MaskPad->SetPadUpperBound(1);
-  MarkerPad->SetPadLowerBound(1);
-  MarkerPad->SetPadUpperBound(1);
+  MaskPad->SetPadLowerBound( padSize.m_Size );
+  MaskPad->SetPadUpperBound( padSize.m_Size );
+  MarkerPad->SetPadLowerBound( padSize.m_Size );
+  MarkerPad->SetPadUpperBound( padSize.m_Size );
 
   MaskPad->SetInput(maskImage);
   MarkerPad->SetInput(markerImage);
@@ -818,8 +821,8 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
     typedef typename itk::CropImageFilter<InputImageType, OutputImageType> CropType;
     typename CropType::Pointer crop = CropType::New();
     crop->SetInput( markerImageP );
-    crop->SetUpperBoundaryCropSize( 1 );
-    crop->SetLowerBoundaryCropSize( 1 );
+    crop->SetUpperBoundaryCropSize( padSize );
+    crop->SetLowerBoundaryCropSize( padSize );
     crop->GraftOutput( this->GetOutput() );
     /** execute the minipipeline */
     crop->Update();
