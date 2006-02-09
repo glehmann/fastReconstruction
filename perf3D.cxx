@@ -1,6 +1,6 @@
 #include "itkImageFileReader.h"
 
-#include "itkHMinimaImageFilter2.h"
+#include "itkHMinimaImageFilterRobinson.h"
 #include "itkHMinimaImageFilter.h"
 #include "itkTimeProbe.h"
 #include <vector>
@@ -19,12 +19,12 @@ int main(int, char * argv[])
   reader->Update();
   
   
-  typedef itk::HMinimaImageFilter2< IType, IType > ReconType;
+  typedef itk::HMinimaImageFilter< IType, IType > ReconType;
   ReconType::Pointer recon = ReconType::New();
   recon->SetInput( reader->GetOutput() );
   recon->SetHeight(1);
  
-  typedef itk::HMinimaImageFilter< IType, IType > OrigReconType;
+  typedef itk::HMinimaImageFilterRobinson< IType, IType > OrigReconType;
   OrigReconType::Pointer origrecon = OrigReconType::New();
   origrecon->SetInput( reader->GetOutput() );
   origrecon->SetHeight(1);

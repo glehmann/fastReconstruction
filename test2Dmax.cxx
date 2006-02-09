@@ -1,7 +1,7 @@
 #include "itkImageFileReader.h"
 #include "itkImageFileWriter.h"
 
-#include "itkHMaximaImageFilter2.h"
+#include "itkHMaximaImageFilterRobinson.h"
 #include "itkHMaximaImageFilter.h"
 #include "itkSimpleFilterWatcher.h"
 
@@ -20,13 +20,13 @@ int main(int, char * argv[])
   
   int height = atoi(argv[4]);
   int F = atoi(argv[5]);
-  typedef itk::HMaximaImageFilter2< IType, IType > ReconType;
+  typedef itk::HMaximaImageFilter< IType, IType > ReconType;
   ReconType::Pointer recon = ReconType::New();
   itk::SimpleFilterWatcher watcher(recon, "recon");
   recon->SetInput( reader->GetOutput() );
   recon->SetHeight(height);
  
-  typedef itk::HMaximaImageFilter< IType, IType > OrigReconType;
+  typedef itk::HMaximaImageFilterRobinson< IType, IType > OrigReconType;
   OrigReconType::Pointer origrecon = OrigReconType::New();
   origrecon->SetInput( reader->GetOutput() );
   origrecon->SetHeight(height);

@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Insight Segmentation & Registration Toolkit
-  Module:    $RCSfile: itkReconstructionByErosionImageFilterOld.txx,v $
+  Module:    $RCSfile: itkReconstructionByErosionImageFilterRobinson.txx,v $
   Language:  C++
   Date:      $Date: 2005/08/29 19:38:23 $
   Version:   $Revision: 1.3 $
@@ -14,13 +14,13 @@
     PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkReconstructionByErosionImageFilterOld_txx
-#define __itkReconstructionByErosionImageFilterOld_txx
+#ifndef __itkReconstructionByErosionImageFilterRobinson_txx
+#define __itkReconstructionByErosionImageFilterRobinson_txx
 
 #include <algorithm>
 #include <set>
 #include <list>
-#include "itkReconstructionByErosionImageFilterOld.h"
+#include "itkReconstructionByErosionImageFilterRobinson.h"
 #include "itkProgressReporter.h"
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIteratorWithIndex.h"
@@ -31,8 +31,8 @@
 namespace itk {
 
 template <class TInputImage, class TOutputImage>
-ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
-::ReconstructionByErosionImageFilterOld()
+ReconstructionByErosionImageFilterRobinson<TInputImage, TOutputImage>
+::ReconstructionByErosionImageFilterRobinson()
 {
   this->SetNumberOfRequiredInputs(2);
   m_FullyConnected = false;
@@ -41,7 +41,7 @@ ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void 
-ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
+ReconstructionByErosionImageFilterRobinson<TInputImage, TOutputImage>
 ::SetMarkerImage(const MarkerImageType* markerImage)
 {
   // Process object is not const-correct so the const casting is required.
@@ -50,8 +50,8 @@ ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
 
 
 template <class TInputImage, class TOutputImage>
-const typename ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>::MarkerImageType *
-ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
+const typename ReconstructionByErosionImageFilterRobinson<TInputImage, TOutputImage>::MarkerImageType *
+ReconstructionByErosionImageFilterRobinson<TInputImage, TOutputImage>
 ::GetMarkerImage()
 {
   return this->GetInput(0);
@@ -60,7 +60,7 @@ ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void 
-ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
+ReconstructionByErosionImageFilterRobinson<TInputImage, TOutputImage>
 ::SetMaskImage(const MaskImageType* maskImage)
 {
   // Process object is not const-correct so the const casting is required.
@@ -69,8 +69,8 @@ ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
 
 
 template <class TInputImage, class TOutputImage>
-const typename ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>::MaskImageType *
-ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
+const typename ReconstructionByErosionImageFilterRobinson<TInputImage, TOutputImage>::MaskImageType *
+ReconstructionByErosionImageFilterRobinson<TInputImage, TOutputImage>
 ::GetMaskImage()
 {
   return this->GetInput(1);
@@ -79,7 +79,7 @@ ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void 
-ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
+ReconstructionByErosionImageFilterRobinson<TInputImage, TOutputImage>
 ::GenerateInputRequestedRegion()
 {
   // call the superclass' implementation of this method
@@ -107,7 +107,7 @@ ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void 
-ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
+ReconstructionByErosionImageFilterRobinson<TInputImage, TOutputImage>
 ::EnlargeOutputRequestedRegion(DataObject *)
 {
   this->GetOutput()
@@ -117,7 +117,7 @@ ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
 
 template<class TInputImage, class TOutputImage>
 void
-ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
+ReconstructionByErosionImageFilterRobinson<TInputImage, TOutputImage>
 ::GenerateData()
 {
   this->AllocateOutputs();
@@ -310,7 +310,7 @@ ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
 
 template<class TInputImage, class TOutputImage>
 void
-ReconstructionByErosionImageFilterOld<TInputImage, TOutputImage>
+ReconstructionByErosionImageFilterRobinson<TInputImage, TOutputImage>
 ::PrintSelf(std::ostream &os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);

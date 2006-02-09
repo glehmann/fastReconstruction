@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Insight Segmentation & Registration Toolkit
-  Module:    $RCSfile: itkReconstructionByDilationImageFilterOld.txx,v $
+  Module:    $RCSfile: itkReconstructionByDilationImageFilterRobinson.txx,v $
   Language:  C++
   Date:      $Date: 2005/08/29 19:38:23 $
   Version:   $Revision: 1.3 $
@@ -14,13 +14,13 @@
     PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkReconstructionByDilationImageFilterOld_txx
-#define __itkReconstructionByDilationImageFilterOld_txx
+#ifndef __itkReconstructionByDilationImageFilterRobinson_txx
+#define __itkReconstructionByDilationImageFilterRobinson_txx
 
 #include <algorithm>
 #include <set>
 #include <list>
-#include "itkReconstructionByDilationImageFilterOld.h"
+#include "itkReconstructionByDilationImageFilterRobinson.h"
 #include "itkProgressReporter.h"
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIteratorWithIndex.h"
@@ -31,8 +31,8 @@
 namespace itk {
 
 template <class TInputImage, class TOutputImage>
-ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
-::ReconstructionByDilationImageFilterOld()
+ReconstructionByDilationImageFilterRobinson<TInputImage, TOutputImage>
+::ReconstructionByDilationImageFilterRobinson()
 {
   this->SetNumberOfRequiredInputs(2);
   m_FullyConnected = false;
@@ -41,7 +41,7 @@ ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void 
-ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
+ReconstructionByDilationImageFilterRobinson<TInputImage, TOutputImage>
 ::SetMarkerImage(const MarkerImageType* markerImage)
 {
   // Process object is not const-correct so the const casting is required.
@@ -50,8 +50,8 @@ ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
 
 
 template <class TInputImage, class TOutputImage>
-const typename ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>::MarkerImageType *
-ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
+const typename ReconstructionByDilationImageFilterRobinson<TInputImage, TOutputImage>::MarkerImageType *
+ReconstructionByDilationImageFilterRobinson<TInputImage, TOutputImage>
 ::GetMarkerImage()
 {
   return this->GetInput(0);
@@ -60,7 +60,7 @@ ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void 
-ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
+ReconstructionByDilationImageFilterRobinson<TInputImage, TOutputImage>
 ::SetMaskImage(const MaskImageType* maskImage)
 {
   // Process object is not const-correct so the const casting is required.
@@ -69,8 +69,8 @@ ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
 
 
 template <class TInputImage, class TOutputImage>
-const typename ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>::MaskImageType *
-ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
+const typename ReconstructionByDilationImageFilterRobinson<TInputImage, TOutputImage>::MaskImageType *
+ReconstructionByDilationImageFilterRobinson<TInputImage, TOutputImage>
 ::GetMaskImage()
 {
   return this->GetInput(1);
@@ -79,7 +79,7 @@ ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void 
-ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
+ReconstructionByDilationImageFilterRobinson<TInputImage, TOutputImage>
 ::GenerateInputRequestedRegion()
 {
   // call the superclass' implementation of this method
@@ -107,7 +107,7 @@ ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void 
-ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
+ReconstructionByDilationImageFilterRobinson<TInputImage, TOutputImage>
 ::EnlargeOutputRequestedRegion(DataObject *)
 {
   this->GetOutput()
@@ -117,7 +117,7 @@ ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
 
 template<class TInputImage, class TOutputImage>
 void
-ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
+ReconstructionByDilationImageFilterRobinson<TInputImage, TOutputImage>
 ::GenerateData()
 {
   this->AllocateOutputs();
@@ -316,7 +316,7 @@ ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
 
 template<class TInputImage, class TOutputImage>
 void
-ReconstructionByDilationImageFilterOld<TInputImage, TOutputImage>
+ReconstructionByDilationImageFilterRobinson<TInputImage, TOutputImage>
 ::PrintSelf(std::ostream &os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);

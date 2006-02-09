@@ -1,61 +1,39 @@
-/*=========================================================================
 
-  Program:   Insight Segmentation & Registration Toolkit
-  Module:    $RCSfile: itkHMinimaImageFilter.h,v $
-  Language:  C++
-  Date:      $Date: 2005/08/23 15:09:03 $
-  Version:   $Revision: 1.4 $
-
-  Copyright (c) Insight Software Consortium. All rights reserved.
-  See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
-
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
-     PURPOSE.  See the above copyright notices for more information.
-
-=========================================================================*/
-#ifndef __itkHMinimaImageFilter2_h
-#define __itkHMinimaImageFilter2_h
+#ifndef __itkHMaximaImageFilterRobinson_h
+#define __itkHMaximaImageFilterRobinson_h
 
 #include "itkImageToImageFilter.h"
 
 namespace itk {
 
-/** \class HMinimaImageFilter2
+/** \class HMaximaImageFilterRobinson
  * \brief Suppress local minima whose depth below the baseline is less than h.
  *
- * HMinimaImageFilter2 suppresses local minima that are less than h
+ * HMaximaImageFilterRobinson suppresses local minima that are less than h
  * intensity units below the (local) background. This has the effect
  * of smoothing over the "low" parts of the noise in the image
  * without smoothing over large changes in intensity (region
- * boundaries). See the HMaximaImageFilter to suppress the local
- * maxima whose height is less than h intensity units above the (local)
- * background.
+ * boundaries). 
  *
  * If original image is subtracted from the output of
- * HMinimaImageFilter2, the signicant "valleys" in the image can be
+ * HMaximaImageFilterRobinson, the signicant "valleys" in the image can be
  * identified.  This is what the HConcaveImageFilter provides.
  *
- * This filter uses the GrayscaleGeodesicErodeImageFilter.  It
- * provides its own input as the "mask" input to the geodesic
- * dilation.  The "marker" image for the geodesic dilation is
- * the input image plus the height parameter h.
- *
- * Geodesic morphology and the H-Minima algorithm is described in
+ * Geodesic morphology and the H-Maxima algorithm is described in
  * Chapter 6 of Pierre Soille's book "Morphological Image Analysis:
  * Principles and Applications", Second Edition, Springer, 2003.
  *
- * \sa GrayscaleGeodesicDilateImageFilter, HMinimaImageFilter2, HConvexImageFilter
+ * \sa GrayscaleGeodesicDilateImageFilter, HMaximaImageFilterRobinson, HConvexImageFilter
  * \sa MorphologyImageFilter, GrayscaleDilateImageFilter, GrayscaleFunctionDilateImageFilter, BinaryDilateImageFilter
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  */
 template<class TInputImage, class TOutputImage>
-class ITK_EXPORT HMinimaImageFilter2 : 
+class ITK_EXPORT HMaximaImageFilterRobinson : 
     public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef HMinimaImageFilter2 Self;
+  typedef HMaximaImageFilterRobinson Self;
   typedef ImageToImageFilter<TInputImage, TOutputImage>
   Superclass;
   typedef SmartPointer<Self>        Pointer;
@@ -83,7 +61,7 @@ public:
   itkNewMacro(Self);  
 
   /** Runtime information support. */
-  itkTypeMacro(HMinimaImageFilter2, 
+  itkTypeMacro(HMaximaImageFilterRobinson, 
                ImageToImageFilter);
 
   /** Set/Get the height that a local maximum must be above the local
@@ -98,7 +76,7 @@ public:
    * output. This method is scheduled for removal since the
    * implementation now uses a noniterative solution. */
   unsigned long GetNumberOfIterationsUsed()
-    { itkLegacyBody(itk::HMinimaImageFilter2::GetNumberOfIterationsUsed, 2.2);
+    { itkLegacyBody(itk::HMaximaImageFilterRobinson::GetNumberOfIterationsUsed, 2.2);
       return m_NumberOfIterationsUsed; };
 
   /**
@@ -112,16 +90,16 @@ public:
   itkBooleanMacro(FullyConnected);
   
 protected:
-  HMinimaImageFilter2();
-  ~HMinimaImageFilter2() {};
+  HMaximaImageFilterRobinson();
+  ~HMaximaImageFilterRobinson() {};
   void PrintSelf(std::ostream& os, Indent indent) const;
 
-  /** HMinimaImageFilter2 needs the entire input be
+  /** HMaximaImageFilterRobinson needs the entire input be
    * available. Thus, it needs to provide an implementation of
    * GenerateInputRequestedRegion(). */
   void GenerateInputRequestedRegion() ;
 
-  /** HMinimaImageFilter2 will produce the entire output. */
+  /** HMaximaImageFilterRobinson will produce the entire output. */
   void EnlargeOutputRequestedRegion(DataObject *itkNotUsed(output));
   
   /** Single-threaded version of GenerateData.  This filter delegates
@@ -130,7 +108,7 @@ protected:
   
 
 private:
-  HMinimaImageFilter2(const Self&); //purposely not implemented
+  HMaximaImageFilterRobinson(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
   InputImagePixelType m_Height;
@@ -141,7 +119,7 @@ private:
 } // end namespace itk
   
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkHMinimaImageFilter2.txx"
+#include "itkHMaximaImageFilterRobinson.txx"
 #endif
 
 #endif

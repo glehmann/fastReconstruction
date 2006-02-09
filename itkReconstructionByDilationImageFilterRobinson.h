@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Insight Segmentation & Registration Toolkit
-  Module:    $RCSfile: itkReconstructionByErosionImageFilterOld.h,v $
+  Module:    $RCSfile: itkReconstructionByDilationImageFilterRobinson.h,v $
   Language:  C++
   Date:      $Date: 2005/08/23 15:08:59 $
   Version:   $Revision: 1.1 $
@@ -14,21 +14,21 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkReconstructionByErosionImageFilterOld_h
-#define __itkReconstructionByErosionImageFilterOld_h
+#ifndef __itkReconstructionByDilationImageFilterRobinson_h
+#define __itkReconstructionByDilationImageFilterRobinson_h
 
 #include "itkImageToImageFilter.h"
 
 namespace itk {
 
-/** \class ReconstructionByErosionImageFilterOld
- * \brief grayscale reconstruction by erosion of an image
+/** \class ReconstructionByDilationImageFilterRobinson
+ * \brief grayscale reconstruction by dilation of an image
  *
- * Reconstruction by erosion operates on a "marker" image and a "mask"
- * image, and is defined as the erosion of the marker image with
+ * Reconstruction by dilation operates on a "marker" image and a "mask"
+ * image, and is defined as the dilation of the marker image with
  * respect to the mask image iterated until stability.
  *
- * The marker image must be greater than or equal to the mask image
+ * The marker image must be less than or equal to the mask image
  * (on a pixel by pixel basis).
  *
  * Geodesic morphology is described in Chapter 6.2 of Pierre Soille's
@@ -47,16 +47,16 @@ namespace itk {
  *
  * \author Gaëtan Lehmann. Biologie du Développement et de la Reproduction, INRA of Jouy-en-Josas, France.
  *
- * \sa MorphologyImageFilter, GrayscaleDilateImageFilter, GrayscaleFunctionDilateImageFilter, BinaryDilateImageFilter, ReconstructionByDilationImageFilter, OpeningByReconstructionImageFilter, ClosingByReconstructionImageFilter
+ * \sa MorphologyImageFilter, GrayscaleDilateImageFilter, GrayscaleFunctionDilateImageFilter, BinaryDilateImageFilter, ReconstructionByErosionImageFilter, OpeningByReconstructionImageFilter, ClosingByReconstructionImageFilter
  * \ingroup ImageEnhancement  MathematicalMorphologyImageFilters
  */
 template<class TInputImage, class TOutputImage>
-class ITK_EXPORT ReconstructionByErosionImageFilterOld : 
+class ITK_EXPORT ReconstructionByDilationImageFilterRobinson : 
     public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef ReconstructionByErosionImageFilterOld Self;
+  typedef ReconstructionByDilationImageFilterRobinson Self;
   typedef ImageToImageFilter<TInputImage, TOutputImage>
   Superclass;
   typedef SmartPointer<Self>        Pointer;
@@ -91,11 +91,11 @@ public:
   itkNewMacro(Self);  
 
   /** Runtime information support. */
-  itkTypeMacro(ReconstructionByErosionImageFilterOld, 
+  itkTypeMacro(ReconstructionByDilationImageFilterRobinson, 
                ImageToImageFilter);
   
   /** Set/Get the marker image. The marker image must be pixelwise
-   * greater than or equal to the mask image. The marker image the
+   * less than or equal to the mask image. The marker image the
    * image that is dilated by this filter. */
   void SetMarkerImage(const MarkerImageType *);
   const MarkerImageType* GetMarkerImage();
@@ -117,11 +117,11 @@ public:
   itkBooleanMacro(FullyConnected);
 
 protected:
-  ReconstructionByErosionImageFilterOld();
-  ~ReconstructionByErosionImageFilterOld() {};
+  ReconstructionByDilationImageFilterRobinson();
+  ~ReconstructionByDilationImageFilterRobinson() {};
   void PrintSelf(std::ostream& os, Indent indent) const;
 
-  /** ReconstructionByErosionImageFilterOld needs to request enough of the
+  /** ReconstructionByDilationImageFilterRobinson needs to request enough of the
    * marker image to account for the elementary structuring element.
    * The mask image does not need to be padded. Depending on whether
    * the filter is configured to run a single iteration or until
@@ -144,7 +144,7 @@ protected:
   void GenerateData();
   
 private:
-  ReconstructionByErosionImageFilterOld(const Self&); //purposely not implemented
+  ReconstructionByDilationImageFilterRobinson(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
   bool m_FullyConnected;
@@ -154,7 +154,7 @@ private:
 } // end namespace itk
   
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkReconstructionByErosionImageFilterOld.txx"
+#include "itkReconstructionByDilationImageFilterRobinson.txx"
 #endif
 
 #endif

@@ -1,18 +1,34 @@
-#ifndef __itkHMaximaImageFilter2_txx
-#define __itkHMaximaImageFilter2_txx
+/*=========================================================================
+
+  Program:   Insight Segmentation & Registration Toolkit
+  Module:    $RCSfile: itkHMinimaImageFilterRobinson.txx,v $
+  Language:  C++
+  Date:      $Date: 2005/08/23 15:09:03 $
+  Version:   $Revision: 1.8 $
+
+  Copyright (c) Insight Software Consortium. All rights reserved.
+  See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
+
+     This software is distributed WITHOUT ANY WARRANTY; without even 
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     PURPOSE.  See the above copyright notices for more information.
+
+=========================================================================*/
+#ifndef __itkHMinimaImageFilterRobinson_txx
+#define __itkHMinimaImageFilterRobinson_txx
 
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
-#include "itkHMaximaImageFilter2.h"
-#include "itkReconstructionByDilationImageFilter.h"
+#include "itkHMinimaImageFilterRobinson.h"
+#include "itkReconstructionByErosionImageFilterRobinson.h"
 #include "itkShiftScaleImageFilter.h"
 #include "itkProgressAccumulator.h"
 
 namespace itk {
 
 template <class TInputImage, class TOutputImage>
-HMaximaImageFilter2<TInputImage, TOutputImage>
-::HMaximaImageFilter2()
+HMinimaImageFilterRobinson<TInputImage, TOutputImage>
+::HMinimaImageFilterRobinson()
 {
   m_Height =  2;
   m_NumberOfIterationsUsed = 1;
@@ -21,7 +37,7 @@ HMaximaImageFilter2<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void 
-HMaximaImageFilter2<TInputImage, TOutputImage>
+HMinimaImageFilterRobinson<TInputImage, TOutputImage>
 ::GenerateInputRequestedRegion()
 {
   // call the superclass' implementation of this method
@@ -36,7 +52,7 @@ HMaximaImageFilter2<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void 
-HMaximaImageFilter2<TInputImage, TOutputImage>
+HMinimaImageFilterRobinson<TInputImage, TOutputImage>
 ::EnlargeOutputRequestedRegion(DataObject *)
 {
   this->GetOutput()
@@ -46,7 +62,7 @@ HMaximaImageFilter2<TInputImage, TOutputImage>
 
 template<class TInputImage, class TOutputImage>
 void
-HMaximaImageFilter2<TInputImage, TOutputImage>
+HMinimaImageFilterRobinson<TInputImage, TOutputImage>
 ::GenerateData()
 {
   // Allocate the output
@@ -59,48 +75,48 @@ HMaximaImageFilter2<TInputImage, TOutputImage>
     ShiftFilterType;
   typename ShiftFilterType::Pointer shift = ShiftFilterType::New();
   shift->SetInput( this->GetInput() );
-  shift->SetShift( -1.0 * static_cast<typename ShiftFilterType::RealType>(m_Height) );
+  shift->SetShift( static_cast<typename ShiftFilterType::RealType>(m_Height) );
 
   // Delegate to a geodesic erosion filter.
   //
   //
-  typename ReconstructionByDilationImageFilter<TInputImage, TInputImage>::Pointer
-    dilate
-    = ReconstructionByDilationImageFilter<TInputImage, TInputImage>::New();
+  typename ReconstructionByErosionImageFilterRobinson<TInputImage, TInputImage>::Pointer
+    erode
+    = ReconstructionByErosionImageFilterRobinson<TInputImage, TInputImage>::New();
 
   // Create a process accumulator for tracking the progress of this minipipeline
   ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
-  progress->RegisterInternalFilter(dilate,1.0f);
+  progress->RegisterInternalFilter(erode,1.0f);
 
-  // set up the dilate filter
-  //dilate->RunOneIterationOff();             // run to convergence
-  dilate->SetMarkerImage( shift->GetOutput() );
-  dilate->SetMaskImage( this->GetInput() );
-  dilate->SetFullyConnected( m_FullyConnected );
+  // set up the erode filter
+  //erode->RunOneIterationOff();             // run to convergence
+  erode->SetMarkerImage( shift->GetOutput() );
+  erode->SetMaskImage( this->GetInput() );
+  erode->SetFullyConnected( m_FullyConnected );
 
-  // graft our output to the dilate filter to force the proper regions
+  // graft our output to the erode filter to force the proper regions
   // to be generated
-  dilate->GraftOutput( this->GetOutput() );
+  erode->GraftOutput( this->GetOutput() );
 
   // reconstruction by erosion
-  dilate->Update();
+  erode->Update();
 
-  // graft the output of the dilate filter back onto this filter's
+  // graft the output of the erode filter back onto this filter's
   // output. this is needed to get the appropriate regions passed
   // back.
-  this->GraftOutput( dilate->GetOutput() );
+  this->GraftOutput( erode->GetOutput() );
 }
 
 
 template<class TInputImage, class TOutputImage>
 void
-HMaximaImageFilter2<TInputImage, TOutputImage>
+HMinimaImageFilterRobinson<TInputImage, TOutputImage>
 ::PrintSelf(std::ostream &os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "Depth of local maxima (contrast): "
+  os << indent << "Depth of local minima (contrast): "
      << static_cast<typename NumericTraits<InputImagePixelType>::PrintType>(m_Height)
      << std::endl;
   os << indent << "Number of iterations used to produce current output: "
