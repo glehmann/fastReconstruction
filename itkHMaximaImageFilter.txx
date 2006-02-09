@@ -87,8 +87,9 @@ HMaximaImageFilter<TInputImage, TOutputImage>
 
   // Create a process accumulator for tracking the progress of this minipipeline
   ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
-  progress->SetMiniPipelineFilter(this);
-  progress->RegisterInternalFilter(dilate,1.0f);
+  progress->SetMiniPipelineFilter( this );
+  progress->RegisterInternalFilter( shift, 0.2f);
+  progress->RegisterInternalFilter( dilate, 0.8f );
 
   // set up the dilate filter
   //dilate->RunOneIterationOff();             // run to convergence

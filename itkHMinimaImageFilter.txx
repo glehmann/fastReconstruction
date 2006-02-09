@@ -86,8 +86,9 @@ HMinimaImageFilter<TInputImage, TOutputImage>
 
   // Create a process accumulator for tracking the progress of this minipipeline
   ProgressAccumulator::Pointer progress = ProgressAccumulator::New();
-  progress->SetMiniPipelineFilter(this);
-  progress->RegisterInternalFilter(erode,1.0f);
+  progress->SetMiniPipelineFilter( this );
+  progress->RegisterInternalFilter( shift, 0.2f);
+  progress->RegisterInternalFilter( erode, 0.8f );
 
   // set up the erode filter
   //erode->RunOneIterationOff();             // run to convergence
