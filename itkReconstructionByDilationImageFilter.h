@@ -1,12 +1,12 @@
-#ifndef __itkMorphologicalReconstructionDilationImageFilter_h
-#define __itkMorphologicalReconstructionDilationImageFilter_h
+#ifndef __itkReconstructionByDilationImageFilter_h
+#define __itkReconstructionByDilationImageFilter_h
 
-#include "itkMorphologicalReconstructionImageFilter.h"
+#include "itkReconstructionImageFilter.h"
 
 #include "itkNumericTraits.h"
 
 namespace itk {
-/** \class MorphologicalReconstructionDilationImageFilter
+/** \class ReconstructionByDilationImageFilter
  * \brief A grayscale geodesic dilation. No incremental option
  * available. Should be much faster than the current ITK version.
  * \author Richard Beare. Department of Medicine, Monash University,
@@ -15,14 +15,14 @@ namespace itk {
 */
 
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT MorphologicalReconstructionDilationImageFilter :
+class ITK_EXPORT ReconstructionByDilationImageFilter :
     public
-    MorphologicalReconstructionImageFilter<TInputImage, TOutputImage,
+    ReconstructionImageFilter<TInputImage, TOutputImage,
 					   std::greater<typename TOutputImage::PixelType>,
 					   std::less<typename TOutputImage::PixelType>  >{
 public:
-  typedef MorphologicalReconstructionDilationImageFilter Self;
-  typedef MorphologicalReconstructionImageFilter<TInputImage, TOutputImage,
+  typedef ReconstructionByDilationImageFilter Self;
+  typedef ReconstructionImageFilter<TInputImage, TOutputImage,
                                      std::greater<typename TOutputImage::PixelType>,
                                      std::less<typename TOutputImage::PixelType> > Superclass;
 
@@ -34,19 +34,19 @@ public:
 
 
 protected:
-  MorphologicalReconstructionDilationImageFilter()
+  ReconstructionByDilationImageFilter()
   {
     SetMarkerValue(NumericTraits<typename TOutputImage::PixelType>::NonpositiveMin());
   }
-  virtual ~MorphologicalReconstructionDilationImageFilter() {}
+  virtual ~ReconstructionByDilationImageFilter() {}
 
 private:
-  MorphologicalReconstructionDilationImageFilter(const Self&); //purposely not implemented
+  ReconstructionByDilationImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
 
 
-}; // end MorphologicalReconstructionDilationImageFilter
+}; // end ReconstructionByDilationImageFilter
 
 
 

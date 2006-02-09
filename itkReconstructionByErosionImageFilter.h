@@ -1,12 +1,12 @@
-#ifndef __itkMorphologicalReconstructionErosionImageFilter_h
-#define __itkMorphologicalReconstructionErosionImageFilter_h
+#ifndef __itkReconstructionByErosionImageFilter_h
+#define __itkReconstructionByErosionImageFilter_h
 
-#include "itkMorphologicalReconstructionImageFilter.h"
+#include "itkReconstructionImageFilter.h"
 
 #include "itkNumericTraits.h"
 
 namespace itk {
-/** \class MorphologicalReconstructionErosionImageFilter
+/** \class ReconstructionByErosionImageFilter
  * \brief A grayscale geodesic dilation. No incremental option
  * available. Should be much faster than the current ITK version. Uses
  * the algorithm sescribed by Luc Vincent, "Morphological grayscale
@@ -18,14 +18,14 @@ namespace itk {
 */
 
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT MorphologicalReconstructionErosionImageFilter :
+class ITK_EXPORT ReconstructionByErosionImageFilter :
     public
-    MorphologicalReconstructionImageFilter<TInputImage, TOutputImage,
+    ReconstructionImageFilter<TInputImage, TOutputImage,
 					   std::less<typename TOutputImage::PixelType>,
 					   std::greater<typename TOutputImage::PixelType>  >{
 public:
-  typedef MorphologicalReconstructionErosionImageFilter Self;
-  typedef MorphologicalReconstructionImageFilter<TInputImage, TOutputImage,
+  typedef ReconstructionByErosionImageFilter Self;
+  typedef ReconstructionImageFilter<TInputImage, TOutputImage,
                                      std::less<typename TOutputImage::PixelType>,
                                      std::greater<typename TOutputImage::PixelType> > Superclass;
 
@@ -37,19 +37,19 @@ public:
 
 
 protected:
-  MorphologicalReconstructionErosionImageFilter()
+  ReconstructionByErosionImageFilter()
   {
     SetMarkerValue(NumericTraits<typename TOutputImage::PixelType>::max());
   }
-  virtual ~MorphologicalReconstructionErosionImageFilter() {}
+  virtual ~ReconstructionByErosionImageFilter() {}
 
 private:
-  MorphologicalReconstructionErosionImageFilter(const Self&); //purposely not implemented
+  ReconstructionByErosionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
 
 
 
-}; // end MorphologicalReconstructionErosionImageFilter
+}; // end ReconstructionByErosionImageFilter
 
 
 

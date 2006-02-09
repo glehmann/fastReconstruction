@@ -1,10 +1,10 @@
-#ifndef __itkMorphologicalReconstructionImageFilter_txx
-#define __itkMorphologicalReconstructionImageFilter_txx
+#ifndef __itkReconstructionImageFilter_txx
+#define __itkReconstructionImageFilter_txx
 
 #include "itkImageRegionConstIterator.h"
 #include "itkImageRegionIterator.h"
 #include "itkNumericTraits.h"
-#include "itkMorphologicalReconstructionImageFilter.h"
+#include "itkReconstructionImageFilter.h"
 #include "itkProgressReporter.h"
 #include "itkConstantBoundaryCondition.h"
 #include "itkConnectedComponentAlgorithm.h"
@@ -19,15 +19,15 @@
 namespace itk {
 
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
-::MorphologicalReconstructionImageFilter()
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+::ReconstructionImageFilter()
 {
   m_FullyConnected = false;
 }
 
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
 void
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 ::GenerateInputRequestedRegion()
 {
   // call the superclass' implementation of this method
@@ -50,7 +50,7 @@ MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TF
 
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
 void
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 ::EnlargeOutputRequestedRegion(DataObject *)
 {
   this->GetOutput()
@@ -59,7 +59,7 @@ MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TF
 
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
 void
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 ::SetMarkerImage(const MarkerImageType* markerImage)
 {
   // Process object is not const-correct so the const casting is required.
@@ -67,23 +67,23 @@ MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TF
 }
 
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
-const typename MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::MarkerImageType *
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::GetMarkerImage()
+const typename ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::MarkerImageType *
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::GetMarkerImage()
 {
   return this->GetInput(0);
 }
 
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
 void
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::SetMaskImage(const MaskImageType* maskImage)
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::SetMaskImage(const MaskImageType* maskImage)
 {
   // Process object is not const-correct so the const casting is required.
   this->SetNthInput(1, const_cast<MaskImageType *>( maskImage ));
 }
 
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
-const typename MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::MaskImageType *
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::GetMaskImage()
+const typename ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::MaskImageType *
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>::GetMaskImage()
 {
   return this->GetInput(1);
 }
@@ -93,7 +93,7 @@ MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TF
 // existing reconstruction routines in itk
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
 void
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 ::GenerateData()
 {
   // Allocate the output
@@ -290,7 +290,7 @@ MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TF
 // the faces on the fifo
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
 void
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 ::GenerateData()
 {
   // Allocate the output
@@ -360,7 +360,7 @@ MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TF
 
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
 void
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 ::fillFaces(FaceListType faceList,
 	    OutputImagePointer &output)
 {
@@ -381,7 +381,7 @@ MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TF
 
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
 void
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 ::copyFaces(FaceListType faceList,
 	    MarkerImageConstPointer markerImage,
 	    OutputImagePointer &output)
@@ -405,7 +405,7 @@ MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TF
 
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
 void
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 ::processRegion(ProgressReporter &progress,
 		const OutputImageRegionType thisRegion,
 		const ISizeType kernelRadius,
@@ -519,7 +519,7 @@ MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TF
 
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
 void
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 ::buildFifo(ProgressReporter &progress,
 	    const OutputImageRegionType thisRegion,
 	    OutputImagePointer &output,
@@ -535,7 +535,7 @@ MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TF
 }
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
 void
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 ::processFifo(ProgressReporter &progress,
 	      const OutputImageRegionType thisRegion,
 	      const ISizeType kernelRadius,
@@ -612,7 +612,7 @@ MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TF
 // a version that takes a padded copy of mask and marker
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
 void
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 ::GenerateData()
 {
   // Allocate the output
@@ -834,7 +834,7 @@ MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TF
 
 template <class TInputImage, class TOutputImage, class TFunction1, class TFunction2>
 void
-MorphologicalReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
+ReconstructionImageFilter<TInputImage, TOutputImage, TFunction1, TFunction2>
 ::PrintSelf(std::ostream &os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);

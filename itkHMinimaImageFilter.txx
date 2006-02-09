@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Insight Segmentation & Registration Toolkit
-  Module:    $RCSfile: itkHMinimaImageFilter2.txx,v $
+  Module:    $RCSfile: itkHMinimaImageFilter.txx,v $
   Language:  C++
   Date:      $Date: 2005/08/23 15:09:03 $
   Version:   $Revision: 1.8 $
@@ -14,12 +14,12 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkHMinimaImageFilter2_txx
-#define __itkHMinimaImageFilter2_txx
+#ifndef __itkHMinimaImageFilter_txx
+#define __itkHMinimaImageFilter_txx
 
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
-#include "itkHMinimaImageFilter2.h"
+#include "itkHMinimaImageFilter.h"
 #include "itkReconstructionByErosionImageFilter.h"
 #include "itkShiftScaleImageFilter.h"
 #include "itkProgressAccumulator.h"
@@ -27,8 +27,8 @@
 namespace itk {
 
 template <class TInputImage, class TOutputImage>
-HMinimaImageFilter2<TInputImage, TOutputImage>
-::HMinimaImageFilter2()
+HMinimaImageFilter<TInputImage, TOutputImage>
+::HMinimaImageFilter()
 {
   m_Height =  2;
   m_NumberOfIterationsUsed = 1;
@@ -37,7 +37,7 @@ HMinimaImageFilter2<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void 
-HMinimaImageFilter2<TInputImage, TOutputImage>
+HMinimaImageFilter<TInputImage, TOutputImage>
 ::GenerateInputRequestedRegion()
 {
   // call the superclass' implementation of this method
@@ -52,7 +52,7 @@ HMinimaImageFilter2<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void 
-HMinimaImageFilter2<TInputImage, TOutputImage>
+HMinimaImageFilter<TInputImage, TOutputImage>
 ::EnlargeOutputRequestedRegion(DataObject *)
 {
   this->GetOutput()
@@ -62,7 +62,7 @@ HMinimaImageFilter2<TInputImage, TOutputImage>
 
 template<class TInputImage, class TOutputImage>
 void
-HMinimaImageFilter2<TInputImage, TOutputImage>
+HMinimaImageFilter<TInputImage, TOutputImage>
 ::GenerateData()
 {
   // Allocate the output
@@ -111,12 +111,12 @@ HMinimaImageFilter2<TInputImage, TOutputImage>
 
 template<class TInputImage, class TOutputImage>
 void
-HMinimaImageFilter2<TInputImage, TOutputImage>
+HMinimaImageFilter<TInputImage, TOutputImage>
 ::PrintSelf(std::ostream &os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "Depth of local minima (contrast): "
+  os << indent << "Depth of local maxima (contrast): "
      << static_cast<typename NumericTraits<InputImagePixelType>::PrintType>(m_Height)
      << std::endl;
   os << indent << "Number of iterations used to produce current output: "

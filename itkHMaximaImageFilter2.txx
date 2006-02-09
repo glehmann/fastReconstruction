@@ -4,7 +4,7 @@
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
 #include "itkHMaximaImageFilter2.h"
-#include "itkMorphologicalReconstructionDilationImageFilter.h"
+#include "itkReconstructionByDilationImageFilter.h"
 #include "itkShiftScaleImageFilter.h"
 #include "itkProgressAccumulator.h"
 
@@ -64,9 +64,9 @@ HMaximaImageFilter2<TInputImage, TOutputImage>
   // Delegate to a geodesic erosion filter.
   //
   //
-  typename MorphologicalReconstructionDilationImageFilter<TInputImage, TInputImage>::Pointer
+  typename ReconstructionByDilationImageFilter<TInputImage, TInputImage>::Pointer
     dilate
-    = MorphologicalReconstructionDilationImageFilter<TInputImage, TInputImage>::New();
+    = ReconstructionByDilationImageFilter<TInputImage, TInputImage>::New();
 
   // Create a process accumulator for tracking the progress of this minipipeline
   ProgressAccumulator::Pointer progress = ProgressAccumulator::New();

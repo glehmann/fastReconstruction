@@ -1,5 +1,5 @@
-#ifndef __itkMorphologicalReconstructionImageFilter_h
-#define __itkMorphologicalReconstructionImageFilter_h
+#ifndef __itkReconstructionImageFilter_h
+#define __itkReconstructionImageFilter_h
 
 #include "itkImageToImageFilter.h"
 #include "itkConstShapedNeighborhoodIterator.h"
@@ -23,7 +23,7 @@
 
 namespace itk {
 
-/** \class MorphologicalReconstructionImageFilter 
+/** \class ReconstructionImageFilter 
  * \brief Performs a grayscale geodesic reconstruction -- for
  * performance comparison with GrayscaleGeodesicDilateImageFilter. 
  *
@@ -42,12 +42,12 @@ namespace itk {
 
 template<class TInputImage, class TOutputImage, 
 	 class TFunction1, class TFunction2>
-class ITK_EXPORT MorphologicalReconstructionImageFilter : 
+class ITK_EXPORT ReconstructionImageFilter : 
     public ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef MorphologicalReconstructionImageFilter Self;
+  typedef ReconstructionImageFilter Self;
   typedef ImageToImageFilter<TInputImage, TOutputImage>
   Superclass;
   typedef SmartPointer<Self>        Pointer;
@@ -88,7 +88,7 @@ public:
   itkNewMacro(Self);  
 
   /** Runtime information support. */
-  itkTypeMacro(MorphologicalReconstructionImageFilter, 
+  itkTypeMacro(ReconstructionImageFilter, 
                ImageToImageFilter);
 
   /** Set/Get the marker image. Traditionally, the marker image must
@@ -124,8 +124,8 @@ public:
 
  
 protected:
-  MorphologicalReconstructionImageFilter();
-  ~MorphologicalReconstructionImageFilter() {};
+  ReconstructionImageFilter();
+  ~ReconstructionImageFilter() {};
   void PrintSelf(std::ostream& os, Indent indent) const;
 
   /** ValuedRegionalExtremaImageFilter needs the entire input be
@@ -140,7 +140,7 @@ protected:
   
 
 private:
-  MorphologicalReconstructionImageFilter(const Self&); //purposely not implemented
+  ReconstructionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
   typename TInputImage::PixelType m_MarkerValue;
   bool                m_FullyConnected;
@@ -207,7 +207,7 @@ private:
 } // end namespace itk
   
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkMorphologicalReconstructionImageFilter.txx"
+#include "itkReconstructionImageFilter.txx"
 #endif
 
 
