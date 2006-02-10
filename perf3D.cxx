@@ -45,7 +45,7 @@ int main(int, char * argv[])
 
     for (int i=0;i<10;i++)
       {
-#if 0
+#if 1
       origtime.Start();
       origrecon->Update();
       origtime.Stop();

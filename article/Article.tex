@@ -79,11 +79,20 @@ time consuming when the aim is to run until convergence.
 A faster, non iterative implementation, has been provided in {\bf
 itkReconstructionByDilationImageFilter} and {\bf
 itkReconstructionByErosionImageFilter}. These filters implement the
-algorithm described in \cite{Robinson2004a}.
+algorithm described in \cite{Robinson2004a}. Actually the algorithm is
+slightly modified to support non integer pixel types by using a map
+instead of an array and a set to store indexes, so a ``pure''
+implementation of the Robinson algorithm may perform better than the
+modified version. Copies of these filters, with {\bf Robinson}
+appended to the filename, are included in the archive associated with
+this article.
 
 This report investigates the performance of another algorithm
 described in \cite{Vincent93a} and demonstrates another significant
 improvement in performance.
+
+The files in the archive associated with this article can be used to
+replace files of the same name in the itk hierarchy.
 
 \section{Hybrid algorithm}
 The hybrid algorithm for morphological reconstruction described in \cite{Vincent93a} is:
@@ -122,18 +131,19 @@ $N^+$ and $N^-$ denoting the set of neighbors reached before and after
 $p$ during a raster scan. $\wedge$ is the pointwise minimum operator.
 \section{Implementation details}
 The implementation of this algorithm is provided by {\bf
-itkMorphologicalReconstructionImageFilter}, which takes functor
-template arguments to provide either erosion or dilation
-reconstruction filters. The reconstruction by erosion filter is {\bf
-MorphologicalReconstructionErosionImageFilter} and the reconstruction
-by dilation filter is {\bf
-MorphologicalReconstructionDilationImageFilter}. These filters are
+itkReconstructionImageFilter}, which takes functor template arguments
+to provide either erosion or dilation reconstruction filters. The
+reconstruction by erosion filter is {\bf
+MorphologicalReconstructionByErosionImageFilter} and the
+reconstruction by dilation filter is {\bf
+MorphologicalReconstructionByDilationImageFilter}. These filters are
 verified by comparison with the existing implementation using a series
 of tests in which regional extrema are supressed. The tests use {\bf
-itkHMinimaImageFilter2} and {\bf itkHMaximaImageFilter2} which are
+itkHMinimaImageFilter} and {\bf itkHMaximaImageFilter} which are
 versions of {\bf itkHMinimaImageFilter} and {\bf
 itkHMaximaImageFilter} that have been modified to use the new
-reconstruction filter.
+reconstruction filter. The old versions are available in the archive
+as {\bf itkHMinimaImageFilterRobinson} etc.
 
 A typical requirement is that the mask must always be greater than or
 equal to the marker image. In the new filter this restriction is
@@ -165,32 +175,94 @@ is fully connected.
 \begin{verbatim}
 > ./perf2D images/cthead1.png
 #F      Robinson        Vincent
-0       0.1303          0.0222
-1       0.13585         0.0273
+0       0.1324          0.0218
+1       0.1427          0.0325
 \end{verbatim}
 
 3D image without optimization:
 \begin{verbatim}
 > ./perf3D images/ESCells.hdr
 #F      Robinson        Vincent
-0       19.947  	3.795
-1       23.771  	6.6095
+0       19.931          3.867
+1       27.534          9.444
 \end{verbatim}
 
 2D images with edge padding:
 \begin{verbatim}
 >  ./perf2D images/cthead1.png
 #F      Robinson        Vincent
-0       0.1394          0.0192
-1       0.1444          0.02185
+0       0.1355          0.0184
+1       0.1474          0.0223
 \end{verbatim}
 3D image with edge padding:
 \begin{verbatim}
 > ./perf3D images/ESCells.hdr
 #F      Robinson        Vincent
-0       20.468          2.807
-1       24.218          4.016
+0       20.135          2.736
+1       27.765          5.071
 \end{verbatim}
+\section{Sample code}
+The following code is from {\bf test2Dmax.cxx} and compares the
+operation of the two implementations:
+\small \begin{verbatim}
+#include "itkImageFileReader.h"
+#include "itkImageFileWriter.h"
+
+#include "itkHMaximaImageFilterRobinson.h"
+#include "itkHMaximaImageFilter.h"
+#include "itkSimpleFilterWatcher.h"
+
+int main(int, char * argv[])
+{
+
+  const int dim = 2;
+  typedef unsigned char PType;
+  typedef itk::Image< PType, dim >    IType;
+  
+  // read the input image
+  typedef itk::ImageFileReader< IType > ReaderType;
+  ReaderType::Pointer reader = ReaderType::New();
+  reader->SetFileName( argv[1] );
+  reader->Update();
+  
+  int height = atoi(argv[4]);
+  int F = atoi(argv[5]);
+  typedef itk::HMaximaImageFilter< IType, IType > ReconType;
+  ReconType::Pointer recon = ReconType::New();
+  itk::SimpleFilterWatcher watcher(recon, "recon");
+  recon->SetInput( reader->GetOutput() );
+  recon->SetHeight(height);
+ 
+  typedef itk::HMaximaImageFilterRobinson< IType, IType > OrigReconType;
+  OrigReconType::Pointer origrecon = OrigReconType::New();
+  origrecon->SetInput( reader->GetOutput() );
+  origrecon->SetHeight(height);
+  itk::SimpleFilterWatcher watcher2(origrecon, "origrecon");
+
+  origrecon->SetFullyConnected(F);
+  recon->SetFullyConnected(F);
+    
+  origrecon->Update();
+
+  recon->Update();
+
+  typedef itk::ImageFileWriter< IType > WriterType;
+  WriterType::Pointer writer = WriterType::New();
+  writer->SetFileName( argv[2] );
+
+  writer->SetInput(recon->GetOutput());
+  writer->Update();
+
+  writer->SetFileName(argv[3]);
+  writer->SetInput(origrecon->GetOutput());
+  writer->Update();
+  
+
+  return 0;
+}
+
+\end{verbatim}
+\normalsize
 
 \section{Conclusion}
 The new implemenation of the Vincent algorithm is between 5 and 8

@@ -1,6 +1,6 @@
 
 # you should use the title of the article instead
-ARTICLE_TITLE = A Great Article For The Insight Journal
+ARTICLE_TITLE = Improving_performance_of_morphological_reconstruction
 
 # spaces are not allowed
 empty:=
