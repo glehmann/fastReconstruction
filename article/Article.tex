@@ -201,6 +201,22 @@ is fully connected.
 0       20.135          2.736
 1       27.765          5.071
 \end{verbatim}
+
+\section{Memory requirements}
+The Vincent algorithm is fairly efficient with respect to memory
+requirements. Most of the work is done directly on the output image,
+with additional memory resources being consumed by the FIFO. The size
+of the FIFO is data dependent, but should never have more elements
+than the original image.
+
+The optimization approach employing padding makes padded copies of
+both of the input images, which effectively doubles the memory
+requirements:
+
+Unoptimized : mask, marker, output, FIFO.
+
+optimized : mask, marker, padded mask, padded marker, output, FIFO.
+
 \section{Sample code}
 The following code is from {\bf test2Dmax.cxx} and compares the
 operation of the two implementations:
@@ -270,7 +286,6 @@ times faster than the Robinson algorithm, depending on the choice of
 connectivity and image padding optimization. Optimization by padding
 the boundary produced a significant saving for the 3D dataset used in
 testing. The saving was not as significant for 2D data.
-
 
 
 \bibliographystyle{plain}
