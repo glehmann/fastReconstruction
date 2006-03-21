@@ -622,6 +622,8 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
   // often than pixels?
   ProgressReporter progress(this, 0, this->GetOutput()->GetRequestedRegion().GetNumberOfPixels()*3);
 
+  TCompare compare;
+
   typedef ImageRegionConstIterator<InputImageType> InputIteratorType;
   typedef ImageRegionIterator<OutputImageType> OutputIteratorType;
   
@@ -629,6 +631,34 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
   MaskImageConstPointer   maskImage = this->GetMaskImage();
   OutputImagePointer      output = this->GetOutput();
 
+  // mask and marker must have the same size
+  if ( this->GetMarkerImage()->GetRequestedRegion().GetSize() != this->GetMaskImage()->GetRequestedRegion().GetSize() )
+    {
+    itkExceptionMacro( << "Marker and mask must have the same size." );
+    }
+
+  // iterator for the marker image
+  typedef ImageRegionConstIteratorWithIndex<MarkerImageType> MarkerIteratorType;
+  typedef typename MarkerIteratorType::IndexType IndexType;
+  MarkerIteratorType markerIt(markerImage, markerImage->GetRequestedRegion());
+  // iterator for the mask image
+  typedef ImageRegionConstIterator<MaskImageType> MaskSimpleIteratorType;
+  MaskSimpleIteratorType maskIt(maskImage, maskImage->GetRequestedRegion());
+  for ( markerIt.GoToBegin(), maskIt.GoToBegin(); !markerIt.IsAtEnd(); ++markerIt, ++maskIt ) 
+    {
+    if ( compare(markerIt.Get(), maskIt.Get()) )
+      {
+      if ( compare(0, 1) )
+        {
+        itkExceptionMacro( << "Marker pixels must be <= mask pixels." );
+        }
+      else
+        {
+        itkExceptionMacro( << "Marker pixels must be >= mask pixels." );
+        }
+
+      }
+    }
 
 
   // create padded versions of the marker image and the mask image
@@ -654,8 +684,6 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
 
   MarkerImageConstPointer markerImageP = MarkerPad->GetOutput();
   MaskImageConstPointer   maskImageP = MaskPad->GetOutput();
-
-  TCompare compare;
 
   FaceCalculatorType faceCalculator;
 
