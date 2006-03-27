@@ -638,8 +638,7 @@ ReconstructionImageFilter<TInputImage, TOutputImage, TCompare>
     }
 
   // iterator for the marker image
-  typedef ImageRegionConstIteratorWithIndex<MarkerImageType> MarkerIteratorType;
-  typedef typename MarkerIteratorType::IndexType IndexType;
+  typedef ImageRegionConstIterator<MarkerImageType> MarkerIteratorType;
   MarkerIteratorType markerIt(markerImage, markerImage->GetRequestedRegion());
   // iterator for the mask image
   typedef ImageRegionConstIterator<MaskImageType> MaskSimpleIteratorType;
