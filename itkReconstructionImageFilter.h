@@ -10,12 +10,8 @@
 #include <queue>
 
 //#define BASIC
-//#define FACES
 #define COPY
 
-#ifdef FACES
-#include "itkNeighborhoodAlgorithm.h"
-#endif
 
 #ifdef COPY
 #include "itkNeighborhoodAlgorithm.h"
@@ -115,6 +111,9 @@ public:
   itkGetConstReferenceMacro(FullyConnected, bool);
   itkBooleanMacro(FullyConnected);
   
+  itkSetMacro(MkInternalCopy, bool);
+  itkGetConstReferenceMacro(MkInternalCopy, bool);
+  itkBooleanMacro(MkInternalCopy);
   /**
    * Set/Get the value of the border - used in boundary condition.
    */
@@ -143,55 +142,13 @@ private:
   void operator=(const Self&); //purposely not implemented
   typename TInputImage::PixelType m_MarkerValue;
   bool                m_FullyConnected;
-
-#ifdef FACES
-  TCompare compare;
-
-
-  // declare our queue type
-  typedef typename std::queue<OutputImageIndexType> FifoType;
+  bool                m_MkInternalCopy;
 
   typedef typename itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<OutputImageType> FaceCalculatorType;
 
   typedef typename FaceCalculatorType::FaceListType FaceListType;
   typedef typename FaceCalculatorType::FaceListType::iterator FaceListTypeIt;
 
-  void processRegion(ProgressReporter &progress,
-		     const OutputImageRegionType thisRegion,
-		     const ISizeType kernelRadius,
-		     MarkerImageConstPointer markerImage,
-		     MaskImageConstPointer   maskImage,
-		     OutputImagePointer &output,
-		     FifoType &IndexFifo);
-
-  void buildFifo(ProgressReporter &progress,
-		 const OutputImageRegionType thisRegion,
-		 OutputImagePointer &output,
-		 FifoType &IndexFifo);
-
-  void processFifo(ProgressReporter &progress,
-		   const OutputImageRegionType thisRegion,
-		   const ISizeType kernelRadius,
-		   MarkerImageConstPointer markerImage,
-		   MaskImageConstPointer   maskImage,
-		   OutputImagePointer &output,
-		   FifoType &IndexFifo);
-
-  void fillFaces(FaceListType faceList,
-		 OutputImagePointer &output);
-  
-  void copyFaces(FaceListType faceList,
-		 MarkerImageConstPointer markerImage,
-		 OutputImagePointer &output);
-		 
-#endif
-
-#ifdef COPY
-  typedef typename itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<OutputImageType> FaceCalculatorType;
-
-  typedef typename FaceCalculatorType::FaceListType FaceListType;
-  typedef typename FaceCalculatorType::FaceListType::iterator FaceListTypeIt;
-#endif
   typedef ImageRegionConstIterator<InputImageType> InputIteratorType;
   typedef ImageRegionIterator<OutputImageType> OutputIteratorType;
 
